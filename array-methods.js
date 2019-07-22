@@ -9,7 +9,7 @@ var hundredThousandairs = dataset.bankBalances.filter(account => account.amount 
 
 // set sumOfBankBalances to be the sum of all value held at `amount` for each bank object
 var sumOfBankBalances = dataset.bankBalances.reduce(function(accumulator, current){
-  return accumulator + current.amount * 1;
+  return accumulator + parseInt(current.amount);
 }, 0);
 
 /*
@@ -25,8 +25,8 @@ var sumOfBankBalances = dataset.bankBalances.reduce(function(accumulator, curren
  */
 
 var sumOfInterests = dataset.bankBalances.reduce(function(accumulator, current){
-  if (current.state === 'WI' || current.state === 'IL' || current.state === 'WY' || current.state === 'OH' || current.state === 'GA' || current.state === 'DE'){
-    return accumulator + Math.round((((current.amount * 1) * 0.189))) ; 
+  if (current.state.includes('WI') || current.state.includes('IL') || current.state.includes('WY') || current.state.includes('OH') || current.state.includes('GA') || current.state.includes('DE')){
+    return accumulator + Math.round((((parseInt(current.amount)) * 0.189))); 
   } else {
     return accumulator;
   }
@@ -50,9 +50,9 @@ var sumOfInterests = dataset.bankBalances.reduce(function(accumulator, current){
  */
 var stateSums = dataset.bankBalances.reduce(function(obj, current){
   if(!obj[current.state]){
-    obj[current.state] = Math.round(current.amount * 1);
+    obj[current.state] = Math.round(parseInt(current.amount));
   } else {
-    obj[current.state] += Math.round(current.amount * 1);
+    obj[current.state] += Math.round(parseInt(current.amount));
   }
   return obj;
 }, {});
@@ -74,15 +74,12 @@ var stateSums = dataset.bankBalances.reduce(function(obj, current){
     round this number to the nearest dollar before moving on.
   )
  */
-// let stateSum = Object.values(stateSums).reduce(function(accumulator, current){
-//   return accumulator + current;
-// }, 0)
-let sumStateArr = Object.keys(stateSums).map(function(key){
-  return [key, stateSums[key]];
+let sumStateArr = Object.entries(stateSums).map(function(key){
+  return key;
 })
 
 var sumOfHighInterests = sumStateArr.reduce(function(accumulator, current){
-  if (current[0] !== 'WI' && current[0] !== 'IL' && current[0] !== 'WY' && current[0] !== 'OH' && current[0] !== 'GA' && current[0] !== 'DE'){
+  if (!current.includes('WI') && !current.includes('IL') && !current.includes('WY') && !current.includes('OH') && !current.includes('GA') && !current.includes('DE')){
     let interest = Math.round((((Number(current[1])) * 0.189))); 
     if (interest > 50000){
       return accumulator + interest;
@@ -135,7 +132,7 @@ var higherStateSums = sumStateArr.reduce(function(accumulator, current){
   otherwise set it to `false`
  */
 var areStatesInHigherStateSum = sumStateArr.every(function(current){
-  if (current[0] === 'WI' || current[0] === 'IL' || current[0] === 'WY' || current[0] === 'OH' || current[0] === 'GA' || current[0] === 'DE'){
+  if (current.includes('WI') && current.includes('IL') && current.includes('WY') && current.includes('OH') && current.includes('GA') && current.includes('DE')){
     return current[1] > 1000000;
   }
 });
@@ -155,7 +152,7 @@ var areStatesInHigherStateSum = sumStateArr.every(function(current){
   otherwise set it to be `false`
  */
 var anyStatesInHigherStateSum = sumStateArr.some(function(current){
-  if (current[0] === 'WI' || current[0] === 'IL' || current[0] === 'WY' || current[0] === 'OH' || current[0] === 'GA' || current[0] === 'DE'){
+  if (current.includes('WI') || current.includes('IL') || current.includes('WY') || current.includes('OH') || current.includes('GA') || current.includes('DE')){
     return current[1] > 2550000;
   }
 });
